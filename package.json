@@ -1,0 +1,31 @@
+{
+  "name": "ts-turnbased-connect",
+  "version": "0.0.1",
+  "description": "Implementation of the Connect(m, n, k, p , q) games",
+  "main": "index.js",
+  "typings": "index.ts",
+  "scripts": {
+    "pretest": "tsc",
+    "test": "mocha --recursive ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djmclaugh/ts-turnbased-connect.git"
+  },
+  "author": "djmclaugh",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/djmclaugh/ts-turnbased-connect/issues"
+  },
+  "homepage": "https://github.com/djmclaugh/ts-turnbased-connect#readme",
+  "dependencies": {
+    "ts-turnbased": "0.0.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.35",
+    "@types/mocha": "^2.2.39",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "typescript": "^2.2.1"
+  }
+}
