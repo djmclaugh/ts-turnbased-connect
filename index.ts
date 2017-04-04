@@ -7,15 +7,20 @@ import {
 } from "ts-turnbased";
 
 export interface ConnectOptions {
+  // Number of columns
+  // Required
   boardWidth: number,
-  boardHeight: number,
+  // Number of rows
+  // Defaults to boardWidth
+  boardHeight?: number,
   // Number of stones in a row to win
+  // Required
   k: number,
   // Number of stones placed per turn
   // Defaults to 1.
   p?: number,
   // Number of stones placed on the first turn
-  // Defaults to p.
+  // Defaults to 1.
   q?: number,
   // If the game considers k+1 in a row a win or not.
   // Defaults to false.
@@ -38,6 +43,8 @@ function getCoordinates(move: ConnectMove): Array<Coordinate> {
   return Array.isArray(move) ? move : [move];
 }
 
+// Implementation of the Connect(m, n, k, p, q) games as defined in
+// http://www.connect6.org/k-in-a-row.pdf
 export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   private board: Array<Array<number>>;
   // Once a winner is found, keep track of it so that we don't have to find them multiple times.
@@ -62,8 +69,11 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
     if (typeof options.boardWidth != "number" || options.boardWidth < 1) {
       throw new InvalidOptionsError(options, "boardWidth must be a number greater or equal to 1");
     }
-    if (typeof options.boardHeight != "number" || options.boardHeight < 1) {
-      throw new InvalidOptionsError(options, "boardHeight must be a number greater or equal to 1");
+    // boardHeight not being set is a valid value that will default to boardWidth.
+    if (options.boardHeight !== null && options.boardHeight !== undefined) {
+      if (typeof options.boardHeight != "number" || options.boardHeight < 1) {
+        throw new InvalidOptionsError(options, "boardHeight must be a number greater or equal to 1");
+      }
     }
     if (typeof options.k != "number" || options.k < 1) {
       throw new InvalidOptionsError(options, "k must be a number greater or equal to 1");
@@ -85,20 +95,17 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
       if (typeof options.noOverlines != "boolean") {
         throw new InvalidOptionsError(options, "noOverlines must be a boolean");
       }
-    } 
+    }
+    let width: number = Math.floor(options.boardWidth);
+    let height: number = options.boardHeight ? Math.floor(options.boardHeight) : width;
     let sanitizedOptions: ConnectOptions = {
-      boardWidth: Math.floor(options.boardWidth),
-      boardHeight: Math.floor(options.boardHeight),
+      boardWidth: width,
+      boardHeight: height,
       k: Math.floor(options.k),
       p: options.p ? Math.floor(options.p) : 1,
-      q: options.q ? Math.floor(options.q) : 0,
+      q: options.q ? Math.floor(options.q) : 1,
+      noOverlines: !!options.noOverlines
     };
-    if (sanitizedOptions.q == 0) {
-      sanitizedOptions.q = sanitizedOptions.p;
-    }
-    if (options.noOverlines) {
-      sanitizedOptions.noOverlines = true;
-    }
     return sanitizedOptions;
   }
 
@@ -266,29 +273,24 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   }
 }
 
-export class Tictactoe extends Connect {
-  constructor() {
-    super({
-      boardWidth: 3,
-      boardHeight: 3,
-      k: 3
-    });
-  }
-}
+// Options for creating a tictactoe game: https://en.wikipedia.org/wiki/Tic-tac-toe
+export function tictactoeOptions(): ConnectOptions {
+  return {
+    boardWidth: 3,
+    boardHeight: 3,
+    k: 3
+  };
+};
 
-export interface Connect6Options {
-  boardWidth?: number,
-  boardHeight?: number
-}
-
-export class Connect6 extends Connect {
-  constructor(options: Connect6Options) {
-    super({
-      boardWidth: options.boardWidth ? options.boardWidth : 19,
-      boardHeight: options.boardHeight ? options.boardHeight : 19,
-      k: 6,
-      p: 2,
-      q: 1
-    });
+// Options for creating a connect6 game: https://en.wikipedia.org/wiki/Connect6
+// First argument specifies width (which defaults to 19) and second argument specifies height
+// (which defaults to null, indicating that the width should be used as height).
+export function connect6Options(boardWidth: number = 19, boardHeight: number = null): ConnectOptions {
+  return {
+    boardWidth: boardWidth,
+    boardHeight: boardHeight,
+    k: 6,
+    p: 2,
+    q: 1
   }
-}
+};
