@@ -28,6 +28,50 @@ export interface ConnectOptions {
   // TODO: Support the different Gomoku variations.
 }
 
+export function sanitizeOptions(options: any): ConnectOptions {
+  if (typeof options.boardWidth != "number" || options.boardWidth < 1) {
+    throw new InvalidOptionsError(options, "boardWidth must be a number greater or equal to 1");
+  }
+  // boardHeight not being set is a valid value that will default to boardWidth.
+  if (options.boardHeight !== null && options.boardHeight !== undefined) {
+    if (typeof options.boardHeight != "number" || options.boardHeight < 1) {
+      throw new InvalidOptionsError(options, "boardHeight must be a number greater or equal to 1");
+    }
+  }
+  if (typeof options.k != "number" || options.k < 1) {
+    throw new InvalidOptionsError(options, "k must be a number greater or equal to 1");
+  }
+  // p not being set is a valid value that will default to 1.
+  if (options.p !== null && options.p !== undefined) {
+    if (typeof options.p != "number" || options.p < 1) {
+      throw new InvalidOptionsError(options, "p must be a number greater or equal to 1");
+    }
+  }
+  // q not being set is a valid value that will default to p.
+  if (options.q !== null && options.q !== undefined) {
+    if (typeof options.q != "number" || options.q < 1) {
+      throw new InvalidOptionsError(options, "q must be a number greater or equal to 1");
+    }
+  }
+  // noOverlines not being set is a valid value that will default to false.
+  if (options.noOverlines !== null && options.noOverlines !== undefined) {
+    if (typeof options.noOverlines != "boolean") {
+      throw new InvalidOptionsError(options, "noOverlines must be a boolean");
+    }
+  }
+  let width: number = Math.floor(options.boardWidth);
+  let height: number = options.boardHeight ? Math.floor(options.boardHeight) : width;
+  let sanitizedOptions: ConnectOptions = {
+    boardWidth: width,
+    boardHeight: height,
+    k: Math.floor(options.k),
+    p: options.p ? Math.floor(options.p) : 1,
+    q: options.q ? Math.floor(options.q) : 1,
+    noOverlines: !!options.noOverlines
+  };
+  return sanitizedOptions;
+}
+
 export interface Coordinate {
   x: number,
   y: number
@@ -66,47 +110,7 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   }
 
   protected sanitizeOptions(options: any): ConnectOptions {
-    if (typeof options.boardWidth != "number" || options.boardWidth < 1) {
-      throw new InvalidOptionsError(options, "boardWidth must be a number greater or equal to 1");
-    }
-    // boardHeight not being set is a valid value that will default to boardWidth.
-    if (options.boardHeight !== null && options.boardHeight !== undefined) {
-      if (typeof options.boardHeight != "number" || options.boardHeight < 1) {
-        throw new InvalidOptionsError(options, "boardHeight must be a number greater or equal to 1");
-      }
-    }
-    if (typeof options.k != "number" || options.k < 1) {
-      throw new InvalidOptionsError(options, "k must be a number greater or equal to 1");
-    }
-    // p not being set is a valid value that will default to 1.
-    if (options.p !== null && options.p !== undefined) {
-      if (typeof options.p != "number" || options.p < 1) {
-        throw new InvalidOptionsError(options, "p must be a number greater or equal to 1");
-      }
-    }
-    // q not being set is a valid value that will default to p.
-    if (options.q !== null && options.q !== undefined) {
-      if (typeof options.q != "number" || options.q < 1) {
-        throw new InvalidOptionsError(options, "q must be a number greater or equal to 1");
-      }
-    }
-    // noOverlines not being set is a valid value that will default to false.
-    if (options.noOverlines !== null && options.noOverlines !== undefined) {
-      if (typeof options.noOverlines != "boolean") {
-        throw new InvalidOptionsError(options, "noOverlines must be a boolean");
-      }
-    }
-    let width: number = Math.floor(options.boardWidth);
-    let height: number = options.boardHeight ? Math.floor(options.boardHeight) : width;
-    let sanitizedOptions: ConnectOptions = {
-      boardWidth: width,
-      boardHeight: height,
-      k: Math.floor(options.k),
-      p: options.p ? Math.floor(options.p) : 1,
-      q: options.q ? Math.floor(options.q) : 1,
-      noOverlines: !!options.noOverlines
-    };
-    return sanitizedOptions;
+    return sanitizeOptions(options);
   }
 
   protected sanitizeMove(move: any): ConnectMove {
