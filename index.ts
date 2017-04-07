@@ -155,8 +155,13 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
       // If the board has less than p empty positions, then we make an exeption and we allow the
       // player to fill the board as the game's last move.
       if (coordinates.length != Math.min(this.options.p, this.numberOfEmptyPositionsLeft())) {
-        throw new IllegalMoveError(move, player,
-            `Except for the first move, each move should place exactly ${this.options.p} stones`);
+        let message: string = `move should place exactly ${this.options.p} stones`;
+        if (this.options.p == this.options.q) {
+           message = "Each " + message;
+        } else {
+           message = "Except for the first move, each " + message;
+        }
+        throw new IllegalMoveError(move, player, message);
       }
     }
     // For each stone placed...
@@ -257,7 +262,11 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
       length += 1;
     }
     if (length == this.options.k || (length > this.options.k && !this.options.noOverlines)) {
-      return [start, end];
+      let winLine: Array<Coordinate> = [];
+      for (let i = 0; i < length; ++i) {
+        winLine.push({x: start.x + (i * direction.x), y: start.y + (i * direction.y)});
+      }
+      return winLine;
     }
     return null;
   }
@@ -268,10 +277,11 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   // avoid rewritting line detection.
   getWinLine(): Array<Coordinate> {
     if (this.winLine) {
-      return [
-          {x: this.winLine[0].x, y: this.winLine[0].y},
-          {x: this.winLine[0].x, y: this.winLine[0].y}
-      ];
+      let winLineCopy: Array<Coordinate> = [];
+      for (let c of this.winLine) {
+        winLineCopy.push({x: c.x, y: c.y});
+      }
+      return winLineCopy;
     }
     return null;
   }
