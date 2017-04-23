@@ -12,7 +12,7 @@ describe("Connect", () => {
         p: 1,
         q: 1
     });
-    game.playMove({x: 0, y: 0}, 0);
+    game.playMove([{x: 0, y: 0}], 0);
     game.playMove([{x: 1, y: 1}], 1);
     game.playMove([{x: 0, y: 2}], 0);
     game.playMove([{x: 1, y: 0}], 1);

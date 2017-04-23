@@ -81,11 +81,9 @@ function areEqual(c1: Coordinate, c2: Coordinate): boolean {
   return c1.x == c2.x && c1.y == c2.y;
 }
 
-export type ConnectMove = Coordinate|Array<Coordinate>;
-
-function getCoordinates(move: ConnectMove): Array<Coordinate> {
-  return Array.isArray(move) ? move : [move];
-}
+// Should technically be a set of coordinates, but since sets are not a native JSON datatype, arrays
+// are used instead. 
+export type ConnectMove = Array<Coordinate>;
 
 // Implementation of the Connect(m, n, k, p, q) games as defined in
 // http://www.connect6.org/k-in-a-row.pdf
@@ -114,20 +112,19 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   }
 
   protected sanitizeMove(move: any): ConnectMove {
-    if (Array.isArray(move)) {
-      let coordinates: Array<Coordinate> = move.map(item => this.sanitizeCoordinate(item));
-      // Assert that all coordinates are distinct.
-      for (let i = 0; i < coordinates.length; ++i) {
-        for (let j = i + 1; j < coordinates.length; ++j) {
-          if (areEqual(coordinates[i], coordinates[j])) {
-            throw new InvalidMoveError(move, "All positions must be distinct");    
-          }
-        }
-      }
-      return coordinates;
-    } else {
-      return this.sanitizeCoordinate(move);
+    if (!Array.isArray(move)) {
+      throw new InvalidMoveError(move, "Move must be an array of coordinates");
     }
+    let sanitizedMove: ConnectMove = [];
+    // Assert that all coordinates are distinct.
+    for (let c of move) {
+      let sanitizedC: Coordinate = this.sanitizeCoordinate(c);
+      if (sanitizedMove.some((existingC: Coordinate) => areEqual(sanitizedC, existingC))) {
+        throw new InvalidMoveError(move, "All positions must be distinct");
+      }
+      sanitizedMove.push(c);
+    }
+    return sanitizedMove;
   }
 
   private sanitizeCoordinate(coordinate: any): Coordinate {
@@ -144,17 +141,16 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   }
 
   protected assertMoveIsLegal(move: ConnectMove, player: number): void {
-    let coordinates: Array<Coordinate> = getCoordinates(move);
     // Check that the move places the correct number of stones.
     if (this.moves.length == 0) {
-      if (coordinates.length != this.options.q) {
+      if (move.length != this.options.q) {
         throw new IllegalMoveError(move, player,
             `The first play should place exactly ${this.options.q} stones`);
       }
     } else {
       // If the board has less than p empty positions, then we make an exeption and we allow the
       // player to fill the board as the game's last move.
-      if (coordinates.length != Math.min(this.options.p, this.numberOfEmptyPositionsLeft())) {
+      if (move.length != Math.min(this.options.p, this.numberOfEmptyPositionsLeft())) {
         let message: string = `move should place exactly ${this.options.p} stones`;
         if (this.options.p == this.options.q) {
            message = "Each " + message;
@@ -165,7 +161,7 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
       }
     }
     // For each stone placed...
-    for (let c of coordinates) {
+    for (let c of move) {
       // check that the stone is on the board.
       if (c.x >= this.options.boardWidth || c.y >= this.options.boardHeight) {
         throw new IllegalMoveError(move, player, "Playing outside the board");
@@ -178,12 +174,11 @@ export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   }
 
   protected processMove(move: ConnectMove): void {
-    let coordinates: Array<Coordinate> = getCoordinates(move);
     let stoneColour: number = 1 + (this.moves.length % 2);
-    for (let c of coordinates) {
+    for (let c of move) {
       this.board[c.x][c.y] = stoneColour;
     }
-    for (let c of coordinates) {
+    for (let c of move) {
       this.winLine = this.getWinLineAtCoordinate(c);
       if (this.winLine) {
         this.winner = stoneColour;
