@@ -1,13 +1,14 @@
-import { GenericGame } from "ts-turnbased";
+import { Game } from "ts-turnbased";
 import { Connect, connect6Options } from "../index";
 
 import { assert } from "chai";
 
-let game: GenericGame;
+let game: Game;
 
 describe("Connect6", function() {
   beforeEach(() => {
     game = new Connect(connect6Options());
+    game.start();
   });
 
   it("should throw an error if I try to play outside the board", function() {

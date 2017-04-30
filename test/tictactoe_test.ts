@@ -1,13 +1,14 @@
-import { GenericGame } from "ts-turnbased";
+import { Game } from "ts-turnbased";
 import { Connect, tictactoeOptions } from "../index";
 
 import { assert } from "chai";
 
-let game: GenericGame;
+let game: Game;
 
 describe("Tictactoe", function() {
   beforeEach(() => {
     game = new Connect(tictactoeOptions());
+    game.start();
   });
 
   it("should throw an error if I try to play outside the board", function() {

@@ -87,7 +87,7 @@ export type ConnectMove = Array<Coordinate>;
 
 // Implementation of the Connect(m, n, k, p, q) games as defined in
 // http://www.connect6.org/k-in-a-row.pdf
-export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
+export class Connect extends AbstractStrategyGame {
   private board: Array<Array<number>>;
   // Once a winner is found, keep track of it so that we don't have to find them multiple times.
   private winner: number;
