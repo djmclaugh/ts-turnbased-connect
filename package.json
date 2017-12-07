@@ -1,6 +1,6 @@
 {
   "name": "ts-turnbased-connect",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Implementation of the Connect(m, n, k, p , q) games",
   "main": "index.js",
   "typings": "index.ts",
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/djmclaugh/ts-turnbased-connect#readme",
   "dependencies": {
-    "ts-turnbased": "0.0.3"
+    "ts-turnbased": "0.0.5"
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",

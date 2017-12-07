@@ -3,7 +3,7 @@ import { Connect, tictactoeOptions } from "../index";
 
 import { assert } from "chai";
 
-let game: Game;
+let game: Connect;
 
 describe("Tictactoe", function() {
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe("Tictactoe", function() {
       game.playMove([{x: 4, y: 1}], 0);
     });
   });
- 
+
   it("should throw an error if I try to play in an non-empty position", function() {
     game.playMove([{x: 1, y: 1}], 0);
     assert.throws(() => {
@@ -33,8 +33,8 @@ describe("Tictactoe", function() {
     game.playMove([{x: 2, y: 1}], 1);
     game.playMove([{x: 0, y: 2}], 0);
     assert.equal(game.getPlayersToPlay().size, 0);
-    assert.equal(game.getWinners().size, 1);
-    assert.isTrue(game.getWinners().has(0));
+    assert.equal(game.getLatestUpdate().winners.length, 1);
+    assert.include(game.getLatestUpdate().winners, 0);
   });
 
   it("should be able to detect a draw", function() {
@@ -48,6 +48,6 @@ describe("Tictactoe", function() {
     game.playMove([{x: 0, y: 2}], 1);
     game.playMove([{x: 2, y: 2}], 0);
     assert.equal(game.getPlayersToPlay().size, 0);
-    assert.equal(game.getWinners().size, 0);
+    assert.equal(game.getLatestUpdate().winners.length, 0);
   });
 });

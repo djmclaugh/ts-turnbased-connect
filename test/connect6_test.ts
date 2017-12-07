@@ -3,7 +3,7 @@ import { Connect, connect6Options } from "../index";
 
 import { assert } from "chai";
 
-let game: Game;
+let game: Connect;
 
 describe("Connect6", function() {
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe("Connect6", function() {
       game.playMove([{x: 1, y: 1}], 1);
     });
   });
- 
+
   it("should throw an error if I try to play in an non-empty position", function() {
     game.playMove([{x: 0, y: 0}], 0);
     assert.throws(() => {
@@ -52,8 +52,8 @@ describe("Connect6", function() {
     game.playMove([{x: 0, y: 3}, {x: 0, y: 4}], 0);
     game.playMove([{x: 1, y: 4}, {x: 1, y: 5}], 1);
     assert.equal(game.getPlayersToPlay().size, 0);
-    assert.equal(game.getWinners().size, 1);
-    assert.isTrue(game.getWinners().has(1));
+    assert.equal(game.getLatestUpdate().winners.length, 1);
+    assert.include(game.getLatestUpdate().winners, 1);
   });
 
   it("should be able to play a full game", function() {
@@ -78,7 +78,7 @@ describe("Connect6", function() {
     game.playMove([{x: 7 , y: 4 }, {x: 8 , y: 4 }], 1);
     game.playMove([{x: 13, y: 10}, {x: 12, y: 9 }], 0);
     assert.equal(game.getPlayersToPlay().size, 0);
-    assert.equal(game.getWinners().size, 1);
-    assert.isTrue(game.getWinners().has(0));
+    assert.equal(game.getLatestUpdate().winners.length, 1);
+    assert.include(game.getLatestUpdate().winners, 0);
   });
 });

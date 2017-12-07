@@ -1,4 +1,4 @@
-import { 
+import {
   AbstractStrategyGame,
   IllegalMoveError,
   InvalidMoveError,
@@ -82,12 +82,12 @@ function areEqual(c1: Coordinate, c2: Coordinate): boolean {
 }
 
 // Should technically be a set of coordinates, but since sets are not a native JSON datatype, arrays
-// are used instead. 
+// are used instead.
 export type ConnectMove = Array<Coordinate>;
 
 // Implementation of the Connect(m, n, k, p, q) games as defined in
 // http://www.connect6.org/k-in-a-row.pdf
-export class Connect extends AbstractStrategyGame {
+export class Connect extends AbstractStrategyGame<ConnectOptions, ConnectMove> {
   private board: Array<Array<number>>;
   // Once a winner is found, keep track of it so that we don't have to find them multiple times.
   private winner: number;
